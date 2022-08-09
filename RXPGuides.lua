@@ -112,6 +112,7 @@ function RXPG_init()
     RXPData.arrowSize = RXPData.arrowSize or 1
     RXPData.windowSize = RXPData.windowSize or 1
     RXPData.arrowText = RXPData.arrowText or 9
+    RXPData.fontSize = RXPData.fontSize or 0
     RXPData.skipMissingPreReqs = false
     if not RXPCData.flightPaths or UnitLevel("player") <= 6 then
         RXPCData.flightPaths = {}

@@ -7,37 +7,7 @@ local _G = _G
 local BackdropTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
 
 addon.width, addon.height = 235, 125 -- Default width/height
-addon.font = _G.GameFontNormal:GetFont()
 
-local defaultColors = {}
-defaultColors.background = {12 / 255, 12 / 255, 27 / 255, 1}
-defaultColors.bottomFrameBG = {18 / 255, 18 / 255, 40 / 255, 1}
-defaultColors.bottomFrameHighlight = {54 / 255, 62 / 255, 109 / 255, 1}
-defaultColors.mapPins = {206 / 210, 123 / 210, 1, 1}
-defaultColors.tooltip = "|cFFCE7BFF" -- AARRGGBB
-
-local hardcoreColors = {}
-hardcoreColors.background = {19 / 255, 0 / 255, 0 / 255, 1}
-hardcoreColors.bottomFrameBG = {31 / 255, 0 / 255, 0 / 255, 1}
-hardcoreColors.bottomFrameHighlight = {81 / 255, 0 / 255, 0 / 255, 1}
-hardcoreColors.mapPins = {0.9, 0.1, 0.1, 1}
-hardcoreColors.tooltip = "|c0000C1FF" -- AARRGGBB
-
-local goldAssistantColors = {}
-goldAssistantColors.background = {32 / 255, 18 / 255, 0 / 255, 1}
-goldAssistantColors.bottomFrameBG = {48 / 255, 27 / 255, 0 / 255, 1}
-goldAssistantColors.bottomFrameHighlight = {125 / 255, 71 / 255, 0 / 255, 1}
-goldAssistantColors.mapPins = {0.95, 0.15, 0.15, 1}
-goldAssistantColors.tooltip = "|c0000C1FF" -- AARRGGBB
-
-addon.colors = defaultColors
-
-addon.defaultTextures = "Interface/AddOns/" .. addonName .. "/Textures/"
-addon.hardcoreTextures = "Interface/AddOns/" .. addonName ..
-                             "/Textures/Hardcore/"
-addon.goldAssistantTextures = "Interface/AddOns/" .. addonName ..
-                                  "/Textures/GoldAssistant/"
-addon.texturePath = addon.defaultTextures
 
 local RXPFrame = CreateFrame("Frame", "RXPFrame", UIParent, BackdropTemplate)
 addon.RXPFrame = RXPFrame
@@ -55,6 +25,9 @@ local ScrollChild = CreateFrame("Frame", "$parent_steps", BottomFrame,
                                 BackdropTemplate)
 local MenuFrame = CreateFrame("Frame", "RXPG_MenuFrame", UIParent,
                               "UIDropDownMenuTemplate")
+
+GuideName.icon = GuideName:CreateTexture("RXPIcon", "ARTWORK")
+
 RXPFrame.BottomFrame = BottomFrame
 RXPFrame.GuideName = GuideName
 RXPFrame.Footer = Footer
@@ -63,27 +36,161 @@ RXPFrame.ScrollFrame = ScrollFrame
 RXPFrame.ScrollChild = ScrollChild
 RXPFrame.MenuFrame = MenuFrame
 
+
+addon.font = _G.GameFontNormal:GetFont()
+
+local skins = {}
+addon.skins = skins
+
+function addon.CreateRXPTheme(colors,texturePath)
+    local theme = {}
+    theme.texturePath = texturePath
+    theme.colors = colors
+    theme.fontSize = 0
+    theme.font = _G.GameFontNormal:GetFont()
+
+    theme.FooterBg = theme.texturePath .. "rxp-banner"
+    theme.GuideNameBg = theme.texturePath .. "rxp-banner"
+    theme.GuideNameClassIcon = theme.texturePath .. class
+    theme.GuideNameIcon = theme.texturePath .. "rxp_logo-64"
+    theme.FooterCog = theme.texturePath .. "rxp_cog-32"
+
+    theme.GuideNameIconAnchor = {"CENTER", addon.RXPFrame.GuideName, "LEFT", 16, 0}
+    theme.GuideNameIconSize = {42, 42}
+    --GuideName.icon:SetPoint("CENTER", GuideName, "LEFT", 16, 0)
+    --GuideName.icon:SetSize(42, 42)
+
+    theme.GuideNameClassIconAnchor = {"CENTER", addon.RXPFrame.GuideName.icon, "BOTTOMRIGHT", -4, 10}
+    theme.GuideNameClassIconSize = {24,24}
+    --GuideName.classIcon:SetPoint("CENTER", GuideName.icon, "BOTTOMRIGHT", -4, 10)
+    --GuideName.classIcon:SetSize(24, 24)
+
+    theme.FooterCogAnchor = {"LEFT", addon.RXPFrame.Footer, "LEFT", 1, 1}
+    theme.FooterCogSize = {18, 18}
+    theme.FooterCogHighlight = {"Interface/MINIMAP/UI-Minimap-ZoomButton-Highlight", "ADD"}
+    --Footer.cog:SetPoint("LEFT", Footer, "LEFT", 1, 1)
+    --Footer.cog:SetSize(18,18)
+    --Footer.cog:SetHighlightTexture("Interface/MINIMAP/UI-Minimap-ZoomButton-Highlight", "ADD")
+
+    theme.arrowFrameTexture = theme.texturePath .. "rxp_navigation_arrow-1"
+    theme.guideNameBackdrop = {
+        -- bgFile = "Interface/BUTTONS/WHITE8X8",
+        edgeFile = theme.texturePath .. "rxp-borders",
+        tile = true,
+        edgeSize = 8,
+        tileSize = 8,
+        insets = {left = 4, right = 2, top = 2, bottom = 4}
+    }
+    theme.backdropEdge = {
+        bgFile = "Interface/BUTTONS/WHITE8X8",
+        -- edgeFile = "Interface/BUTTONS/WHITE8X8",
+        -- edgeFile = "Interface/ARENAENEMYFRAME/UI-Arena-Border",
+        edgeFile = theme.texturePath .. "rxp-borders",
+        tile = true,
+        edgeSize = 8,
+        tileSize = 8,
+        insets = {left = 4, right = 2, top = 2, bottom = 4}
+    }
+
+
+
+    return theme
+end
+
+
+function addon.SetSkin(skin)
+    addon.texturePath = skin.texturePath
+    addon.colors = skin.colors
+    addon.RXPFrame.backdropEdge = skin.backdropEdge
+    addon.RXPFrame.guideNameBackdrop = skin.guideNameBackdrop
+    addon.RXPFrame.skin = skin
+    addon.fontOffset = skin.fontSize
+    addon.font = skin.font
+    addon.SetText()
+end
+
+
+--Same as RXPGuides.ImportSkin, available from the public namespace
+function addon.RXPG.ImportSkin(name,tbl)
+    if not name:find("^RXP ") then
+        addon.skins[name] = tbl
+    end
+end
+
+
+addon.skins["RXP Blue"] = addon.CreateRXPTheme({
+    background = {12 / 255, 12 / 255, 27 / 255, 1},
+    bottomFrameBG = {18 / 255, 18 / 255, 40 / 255, 1},
+    bottomFrameHighlight = {54 / 255, 62 / 255, 109 / 255, 1},
+    mapPins = {206 / 210, 123 / 210, 1, 1},
+    tooltip = "|cFFCE7BFF", -- AARRGGBB
+    text = {1,1,1,1},
+},"Interface/AddOns/" .. addonName .. "/Textures/")
+
+addon.skins["RXP Gold"] = addon.CreateRXPTheme({
+    background = {32 / 255, 18 / 255, 0 / 255, 1},
+    bottomFrameBG = {48 / 255, 27 / 255, 0 / 255, 1},
+    bottomFrameHighlight = {125 / 255, 71 / 255, 0 / 255, 1},
+    mapPins = {0.95, 0.15, 0.15, 1},
+    tooltip = "|c0000C1FF", -- AARRGGBB
+    text = {1,1,1,1},
+},"Interface/AddOns/" .. addonName .. "/Textures/GoldAssistant/")
+
+local RxpRed = addon.CreateRXPTheme({
+    background = {19 / 255, 0 / 255, 0 / 255, 1},
+    bottomFrameBG = {31 / 255, 0 / 255, 0 / 255, 1},
+    bottomFrameHighlight = {81 / 255, 0 / 255, 0 / 255, 1},
+    mapPins = {0.9, 0.1, 0.1, 1},
+    tooltip = "|c0000C1FF", -- AARRGGBB
+    text = {1,1,1,1},
+},"Interface/AddOns/" .. addonName .. "/Textures/Hardcore/")
+--RxpRed.FooterCogSize = {20,20}
+RxpRed.FooterCogAnchor = {"LEFT", addon.RXPFrame.Footer, "LEFT", 0, 1}
+RxpRed.fontSize = 5
+addon.skins["RXP Red"] = RxpRed
+
+addon.fontOffset = 0
+RXPFrame.fontSize = {}
+
+function addon.SetFont(frame,size)
+    RXPFrame.fontSize[frame] = size
+    local offset = RXPData and RXPData.fontSize or 0
+    frame:SetFont(addon.font,size + addon.fontOffset + offset)
+    if addon.colors.text then
+        frame:SetTextColor(unpack(addon.colors.text))
+    end
+
+end
+
+addon.SetText = function()
+    for frame,size in pairs(RXPFrame.fontSize) do
+        addon.SetFont(frame,size)
+    end
+end
+
+addon.SetSkin(addon.skins["RXP Blue"])
+
 function addon.GetTexture(name) return addon.texturePath .. name end
 
 function addon.RenderFrame()
-    local path
-    local colors
-    if RXPCData.hardcore then
-        path = addon.hardcoreTextures
-        colors = hardcoreColors
-    elseif RXPCData.GA then
-        path = addon.goldAssistantTextures
-        colors = goldAssistantColors
+
+    if RXPData.skin and addon.skins[RXPData.skin] then
+        addon.SetSkin(addon.skins[RXPData.skin])
     else
-        path = addon.defaultTextures
-        colors = defaultColors
+        if RXPCData.hardcore then
+            addon.SetSkin(addon.skins["RXP Red"])
+        elseif RXPCData.GA then
+            addon.SetSkin(addon.skins["RXP Gold"])
+        else
+            addon.SetSkin(addon.skins["RXP Blue"])
+        end
     end
-    if path == addon.texturePath then return end
+    if RXPFrame.skin == addon.style then return end
     RXPFrame.GenerateMenuTable()
-    addon.colors = colors
-    addon.texturePath = path
-    RXPFrame.backdropEdge.edgeFile = addon.GetTexture("rxp-borders")
-    RXPFrame.guideNameBackdrop.edgeFile = addon.GetTexture("rxp-borders")
+
+    local theme = RXPFrame.skin
+    addon.style = theme
+
     BottomFrame:ClearBackdrop()
     BottomFrame:SetBackdrop(RXPFrame.backdropEdge)
     BottomFrame:SetBackdropColor(unpack(addon.colors.background))
@@ -100,15 +207,28 @@ function addon.RenderFrame()
     Footer:ClearBackdrop()
     Footer:SetBackdrop(RXPFrame.backdropEdge)
     Footer:SetBackdropColor(unpack(addon.colors.background))
-    Footer.bg:SetTexture(addon.GetTexture("rxp-banner"))
+    Footer.bg:SetTexture(theme.FooterBg)
 
-    GuideName.bg:SetTexture(addon.GetTexture("rxp-banner"))
-    GuideName.icon:SetTexture(addon.GetTexture("rxp_logo-64"))
-    GuideName.classIcon:SetTexture(addon.GetTexture(class))
-    Footer.cog:SetNormalTexture(addon.GetTexture("rxp_cog-32"))
+    GuideName.bg:SetTexture(theme.GuideNameBg)
 
-    addon.arrowFrame.texture:SetTexture(addon.GetTexture(
-                                            "rxp_navigation_arrow-1"))
+    GuideName.icon:SetTexture(theme.GuideNameIcon)
+    GuideName.icon:ClearAllPoints()
+    GuideName.icon:SetPoint(unpack(theme.GuideNameIconAnchor))
+    GuideName.icon:SetSize(unpack(theme.GuideNameIconSize))
+
+    GuideName.classIcon:SetTexture(theme.GuideNameClassIcon)
+    GuideName.classIcon:ClearAllPoints()
+    GuideName.classIcon:SetPoint(unpack(theme.GuideNameClassIconAnchor))
+    GuideName.classIcon:SetSize(unpack(theme.GuideNameClassIconSize))
+
+    Footer.cog:SetNormalTexture(theme.FooterCog)
+    Footer.cog:ClearAllPoints()
+    Footer.cog:SetPoint(unpack(theme.FooterCogAnchor))
+    Footer.cog:SetSize(unpack(theme.FooterCogSize))
+    Footer.cog:SetHighlightTexture(unpack(theme.FooterCogHighlight))
+
+    addon.arrowFrame.texture:SetTexture(theme.arrowFrameTexture)
+
     addon.UpdateScrollBar()
     if addon.currentGuide then addon.ReloadGuide() end
 end
@@ -516,7 +636,7 @@ function addon.SetStep(n, n2, loopback)
             stepframe.number.text:SetJustifyH("CENTER")
             stepframe.number.text:SetJustifyV("CENTER")
             stepframe.number.text:SetTextColor(1, 1, 1)
-            stepframe.number.text:SetFont(addon.font, 9)
+            addon.SetFont(stepframe.number.text,9)
         end
         if stepframe.hardcore ~= RXPCData.hardcore or not stepframe.hardcore then
             stepframe.hardcore = RXPCData.hardcore
@@ -582,8 +702,7 @@ function addon.SetStep(n, n2, loopback)
                 elementFrame.text:SetJustifyH("LEFT")
                 elementFrame.text:SetJustifyV("CENTER")
                 elementFrame.text:SetTextColor(1, 1, 1)
-                elementFrame.text:SetFont(addon.font, 11)
-
+                addon.SetFont(elementFrame.text,11)
                 elementFrame.icon =
                     elementFrame:CreateFontString(nil, "OVERLAY")
                 elementFrame.icon:SetFontObject(_G.GameFontNormalSmall)
@@ -850,14 +969,7 @@ BottomFrame:SetBackdropColor(unpack(addon.colors.background))
 BottomFrame:SetPoint("TOPLEFT", RXPFrame, 3, -3)
 BottomFrame:SetPoint("BOTTOMRIGHT", RXPFrame, -3, 14)
 
-RXPFrame.guideNameBackdrop = {
-    -- bgFile = "Interface/BUTTONS/WHITE8X8",
-    edgeFile = addon.GetTexture("rxp-borders"),
-    tile = true,
-    edgeSize = 8,
-    tileSize = 8,
-    insets = {left = 4, right = 2, top = 2, bottom = 4}
-}
+
 
 GuideName:SetBackdrop(RXPFrame.guideNameBackdrop)
 
@@ -873,7 +985,7 @@ GuideName.text:SetPoint("RIGHT", GuideName, 0, 0)
 GuideName.text:SetJustifyH("CENTER")
 GuideName.text:SetJustifyV("CENTER")
 GuideName.text:SetTextColor(1, 1, 1)
-GuideName.text:SetFont(addon.font, 11)
+addon.SetFont(GuideName.text,11)
 GuideName.text:SetText("Welcome to RestedXP Guides\nRight click to pick a guide")
 GuideName:SetFrameLevel(6)
 
@@ -898,7 +1010,7 @@ Footer.text:SetPoint("RIGHT", Footer, -16, 1)
 Footer.text:SetJustifyH("LEFT")
 Footer.text:SetJustifyV("CENTER")
 Footer.text:SetTextColor(1, 1, 1)
-Footer.text:SetFont(addon.font, 9)
+addon.SetFont(Footer.text,9)
 Footer.text:SetText("RXPGuides " .. addon.release)
 Footer:SetFrameLevel(6)
 Footer.bg = Footer:CreateTexture("$parentBG", "BACKGROUND")
@@ -921,7 +1033,7 @@ Footer.icon:SetScript("OnMouseUp", RXPFrame.OnMouseUp)
 
 --addon.StartTimer(duration,label)
 
-GuideName.icon = GuideName:CreateTexture("RXPIcon", "ARTWORK")
+
 GuideName.icon:SetTexture("Interface/AddOns/" .. addonName ..
                               "/Textures/rxp_logo-64")
 GuideName.icon:SetPoint("CENTER", GuideName, "LEFT", 16, 0)
@@ -935,8 +1047,7 @@ GuideName.classIcon:SetSize(24, 24)
 
 Footer.cog = CreateFrame("Button", "$parentCogwheel", RXPFrame)
 Footer.cog:SetFrameLevel(GuideName:GetFrameLevel() + 1)
-Footer.cog:SetWidth(18)
-Footer.cog:SetHeight(18)
+Footer.cog:SetSize(18,18)
 Footer.cog:SetPoint("LEFT", Footer, "LEFT", 1, 1)
 Footer.cog:SetNormalTexture("Interface/AddOns/" .. addonName ..
                                    "/Textures/rxp_cog-32")
@@ -1197,7 +1308,7 @@ function addon:LoadGuide(guide, OnLoad)
             frame.number.text:SetJustifyH("CENTER")
             frame.number.text:SetJustifyV("CENTER")
             frame.number.text:SetTextColor(1, 1, 1, 1)
-            frame.number.text:SetFont(addon.font, 8)
+            addon.SetFont(frame.number.text, 8)
             local prefix = ""
             if n < 10 then prefix = "0" end
             frame.number.text:SetText(prefix .. tostring(n))
@@ -1211,7 +1322,7 @@ function addon:LoadGuide(guide, OnLoad)
         frame.text:SetJustifyH("LEFT")
         frame.text:SetJustifyV("TOP")
         frame.text:SetTextColor(1, 1, 1, 1)
-        frame.text:SetFont(addon.font, 9)
+        addon.SetFont(frame.text, 9)
 
         -- frame.text:SetHeight(1000)
 

@@ -1,0 +1,3 @@
+local addonName,addon = ...
+local _, class = UnitClass("player")
+

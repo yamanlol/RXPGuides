@@ -339,6 +339,10 @@ function addon.settings.CreateOptionsPanel()
         if (self.key == "phase" or self.key == "xprate") and addon.currentGuide then
             addon.ReloadGuide()
             addon.RXPFrame.GenerateMenuTable()
+        elseif self.key == "fontSize" then
+            addon.SetText()
+            addon.RXPFrame.BottomFrame.UpdateFrame()
+            addon.RXPFrame.CurrentStepFrame.UpdateText()
         end
         addon.RXPFrame.SetStepFrameAnchor()
     end
@@ -383,6 +387,8 @@ function addon.settings.CreateOptionsPanel()
                           315, -25, 0.05)
     slider = CreateSlider(RXPData, "arrowText", 5, 20, "Arrow Text Size: %d",
                           "Size of the waypoint arrow text", slider, 0, -25, 1)
+    slider = CreateSlider(RXPData, "fontSize", -5, 5, "Main window Text Size: %d",
+                          "", slider, 0, -25, 1)
     slider = CreateSlider(RXPData, "windowSize", 0.2, 2, "Window Scale: %.2f",
                           "Scale of the Main Window, use alt+left click on the main window to resize it",
                           slider, 0, -25, 0.05)
