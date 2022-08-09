@@ -146,16 +146,18 @@ local RxpRed = addon.CreateRXPTheme({
 },"Interface/AddOns/" .. addonName .. "/Textures/Hardcore/")
 --RxpRed.FooterCogSize = {20,20}
 RxpRed.FooterCogAnchor = {"LEFT", addon.RXPFrame.Footer, "LEFT", 0, 1}
-RxpRed.fontSize = 5
 addon.skins["RXP Red"] = RxpRed
 
 addon.fontOffset = 0
 RXPFrame.fontSize = {}
-
-function addon.SetFont(frame,size)
+RXPFrame.fontSizeMax = {}
+function addon.SetFont(frame,size,maxSize)
     RXPFrame.fontSize[frame] = size
+    RXPFrame.fontSizeMax[frame] = maxSize
+    maxSize = maxSize or 0xff
     local offset = RXPData and RXPData.fontSize or 0
-    frame:SetFont(addon.font,size + addon.fontOffset + offset)
+    frame:SetFont(addon.font,math.min(maxSize,
+                                      size + addon.fontOffset + offset))
     if addon.colors.text then
         frame:SetTextColor(unpack(addon.colors.text))
     end
@@ -164,7 +166,8 @@ end
 
 addon.SetText = function()
     for frame,size in pairs(RXPFrame.fontSize) do
-        addon.SetFont(frame,size)
+        local maxSize = RXPFrame.fontSizeMax[frame] or 0xff
+        addon.SetFont(frame,size,maxSize)
     end
 end
 
@@ -636,7 +639,7 @@ function addon.SetStep(n, n2, loopback)
             stepframe.number.text:SetJustifyH("CENTER")
             stepframe.number.text:SetJustifyV("CENTER")
             stepframe.number.text:SetTextColor(1, 1, 1)
-            addon.SetFont(stepframe.number.text,9)
+            addon.SetFont(stepframe.number.text,9,12)
         end
         if stepframe.hardcore ~= RXPCData.hardcore or not stepframe.hardcore then
             stepframe.hardcore = RXPCData.hardcore
@@ -985,7 +988,7 @@ GuideName.text:SetPoint("RIGHT", GuideName, 0, 0)
 GuideName.text:SetJustifyH("CENTER")
 GuideName.text:SetJustifyV("CENTER")
 GuideName.text:SetTextColor(1, 1, 1)
-addon.SetFont(GuideName.text,11)
+addon.SetFont(GuideName.text,11,13)
 GuideName.text:SetText("Welcome to RestedXP Guides\nRight click to pick a guide")
 GuideName:SetFrameLevel(6)
 
@@ -1010,7 +1013,7 @@ Footer.text:SetPoint("RIGHT", Footer, -16, 1)
 Footer.text:SetJustifyH("LEFT")
 Footer.text:SetJustifyV("CENTER")
 Footer.text:SetTextColor(1, 1, 1)
-addon.SetFont(Footer.text,9)
+addon.SetFont(Footer.text,9,12)
 Footer.text:SetText("RXPGuides " .. addon.release)
 Footer:SetFrameLevel(6)
 Footer.bg = Footer:CreateTexture("$parentBG", "BACKGROUND")
@@ -1308,7 +1311,7 @@ function addon:LoadGuide(guide, OnLoad)
             frame.number.text:SetJustifyH("CENTER")
             frame.number.text:SetJustifyV("CENTER")
             frame.number.text:SetTextColor(1, 1, 1, 1)
-            addon.SetFont(frame.number.text, 8)
+            addon.SetFont(frame.number.text, 8,11)
             local prefix = ""
             if n < 10 then prefix = "0" end
             frame.number.text:SetText(prefix .. tostring(n))
