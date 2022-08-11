@@ -43,57 +43,76 @@ local skins = {}
 addon.skins = skins
 
 function addon.CreateRXPTheme(colors,texturePath)
-    local theme = {}
-    theme.texturePath = texturePath --deprecated, used only for generating the different UI themes
-    theme.colors = colors
-    theme.fontSize = 0
-    theme.font = _G.GameFontNormal:GetFont()
+    local theme = {
+        texturePath = texturePath,
+        colors = colors,
+        fontSize = 0,
+        font = _G.GameFontNormal:GetFont(),
 
-    theme.FooterBg = theme.texturePath .. "rxp-banner"
-    theme.GuideNameBg = theme.texturePath .. "rxp-banner"
-    theme.GuideNameClassIcon = theme.texturePath .. class
-    theme.GuideNameIcon = theme.texturePath .. "rxp_logo-64"
-    theme.FooterCog = theme.texturePath .. "rxp_cog-32"
+        --Frame Alpha:
+        BottomFrameAlpha = 1,
+        StepFrameAlpha = 1,
+        GuideNameAlpha = 1,
+        FooterAlpha = 1,
 
-    theme.GuideNameIconAnchor = {"CENTER", addon.RXPFrame.GuideName, "LEFT", 16, 0}
-    theme.GuideNameIconSize = {42, 42}
-    --GuideName.icon:SetPoint("CENTER", GuideName, "LEFT", 16, 0)
-    --GuideName.icon:SetSize(42, 42)
+        --Texture Alpha:
+        GuideNameBgAlpha = 1,
+        FooterBgAlpha = 1,
+        GuideNameIconAlpha = 1,
+        GuideNameClassIconAlpha = 1,
+        FooterCogAlpha = 1,
 
-    theme.GuideNameClassIconAnchor = {"CENTER", addon.RXPFrame.GuideName.icon, "BOTTOMRIGHT", -4, 10}
-    theme.GuideNameClassIconSize = {24,24}
-    --GuideName.classIcon:SetPoint("CENTER", GuideName.icon, "BOTTOMRIGHT", -4, 10)
-    --GuideName.classIcon:SetSize(24, 24)
+        FooterBg = texturePath .. "rxp-banner",
+        GuideNameBg = texturePath .. "rxp-banner",
 
-    theme.FooterCogAnchor = {"LEFT", addon.RXPFrame.Footer, "LEFT", 1, 1}
-    theme.FooterCogSize = {18, 18}
-    theme.FooterCogHighlight = {"Interface/MINIMAP/UI-Minimap-ZoomButton-Highlight", "ADD"}
-    --Footer.cog:SetPoint("LEFT", Footer, "LEFT", 1, 1)
-    --Footer.cog:SetSize(18,18)
-    --Footer.cog:SetHighlightTexture("Interface/MINIMAP/UI-Minimap-ZoomButton-Highlight", "ADD")
+    --Setting any of those textures to nil will make their associated button disappear:
+        GuideNameClassIcon = texturePath .. class,
+        GuideNameIcon = texturePath .. "rxp_logo-64",
+        FooterCog = texturePath .. "rxp_cog-32",
+    -------------------------------------------------
 
-    theme.arrowFrameTexture = theme.texturePath .. "rxp_navigation_arrow-1"
-    theme.guideNameBackdrop = {
-        -- bgFile = "Interface/BUTTONS/WHITE8X8",
-        edgeFile = theme.texturePath .. "rxp-borders",
-        tile = true,
-        edgeSize = 8,
-        tileSize = 8,
-        insets = {left = 4, right = 2, top = 2, bottom = 4}
+        GuideNameIconAnchor = {"CENTER", RXPFrame.GuideName, "LEFT", 16, 0},
+        GuideNameIconSize = {42, 42},
+
+        GuideNameClassIconAnchor = {"CENTER", RXPFrame.GuideName.icon, "BOTTOMRIGHT", -4, 10},
+        GuideNameClassIconSize = {24,24},
+
+        FooterCogAnchor = {"LEFT", RXPFrame.Footer, "LEFT", 1, 1},
+        FooterCogSize = {18, 18},
+        FooterCogHighlight = {"Interface/MINIMAP/UI-Minimap-ZoomButton-Highlight", "ADD"},
+
+        arrowFrameTexture = texturePath .. "rxp_navigation_arrow-1",
+        guideNameBackdrop = {
+            -- bgFile = "Interface/BUTTONS/WHITE8X8",
+            edgeFile = texturePath .. "rxp-borders",
+            tile = true,
+            edgeSize = 8,
+            tileSize = 8,
+            insets = {left = 4, right = 2, top = 2, bottom = 4}
+        },
+        backdropEdge = {
+            bgFile = "Interface/BUTTONS/WHITE8X8",
+            -- edgeFile = "Interface/BUTTONS/WHITE8X8",
+            -- edgeFile = "Interface/ARENAENEMYFRAME/UI-Arena-Border",
+            edgeFile = texturePath .. "rxp-borders",
+            tile = true,
+            edgeSize = 8,
+            tileSize = 8,
+            insets = {left = 4, right = 2, top = 2, bottom = 4}
+        },
+
+        --ScrollBar textures:
+        ScrollDownNormal = texturePath .. "Scrollbar/Down-Normal",
+        ScrollDownHighlight = texturePath .. "Scrollbar/Down-Highlight",
+        ScrollDownPushed = texturePath .. "Scrollbar/Down-Pushed",
+        ScrollDownDisabled = texturePath .. "Scrollbar/Down-Disabled",
+        ScrollUpNormal = texturePath .. "Scrollbar/Up-Normal",
+        ScrollUpHighlight = texturePath .. "Scrollbar/Up-Highlight",
+        ScrollUpPushed = texturePath .. "Scrollbar/Up-Pushed",
+        ScrollUpDisabled =  texturePath .. "Scrollbar/Up-Disabled",
+        ScrollKnob = texturePath .. "Scrollbar/Knob",
+
     }
-    theme.backdropEdge = {
-        bgFile = "Interface/BUTTONS/WHITE8X8",
-        -- edgeFile = "Interface/BUTTONS/WHITE8X8",
-        -- edgeFile = "Interface/ARENAENEMYFRAME/UI-Arena-Border",
-        edgeFile = theme.texturePath .. "rxp-borders",
-        tile = true,
-        edgeSize = 8,
-        tileSize = 8,
-        insets = {left = 4, right = 2, top = 2, bottom = 4}
-    }
-
-
-
     return theme
 end
 
@@ -198,6 +217,7 @@ function addon.RenderFrame()
     BottomFrame:ClearBackdrop()
     BottomFrame:SetBackdrop(RXPFrame.backdropEdge)
     BottomFrame:SetBackdropColor(unpack(addon.colors.background))
+    BottomFrame:SetAlpha(theme.BottomFrameAlpha)
 
     if RXPFrame.activeItemFrame then
         RXPFrame.activeItemFrame:ClearBackdrop()
@@ -212,23 +232,19 @@ function addon.RenderFrame()
     Footer:SetBackdrop(RXPFrame.backdropEdge)
     Footer:SetBackdropColor(unpack(addon.colors.background))
 
-    if theme.GuideNameBg then
-        GuideName.bg:SetTexture(theme.GuideNameBg)
-        GuideName.bg:SetAlpha(1)
-    else
-        GuideName.bg:SetAlpha(0)
-    end
+    GuideName.bg:SetTexture(theme.GuideNameBg)
+    GuideName.bg:SetAlpha(theme.GuideNameBgAlpha)
 
-    if theme.FooterBg then
-        Footer.bg:SetTexture(theme.FooterBg)
-        Footer.bg:SetAlpha(1)
-    else
-        Footer.bg:SetAlpha(0)
-    end
+    GuideName:SetAlpha(theme.GuideNameAlpha)
+
+    Footer:SetAlpha(theme.FooterAlpha)
+    Footer.bg:SetTexture(theme.FooterBg)
+    Footer.bg:SetAlpha(theme.FooterBgAlpha)
 
     GuideName.icon:ClearAllPoints()
     if theme.GuideNameIcon then
         GuideName.icon:SetTexture(theme.GuideNameIcon)
+        GuideName.icon:SetAlpha(theme.GuideNameIconAlpha)
         GuideName.icon:SetPoint(unpack(theme.GuideNameIconAnchor))
         GuideName.icon:SetSize(unpack(theme.GuideNameIconSize))
     end
@@ -236,6 +252,7 @@ function addon.RenderFrame()
     GuideName.classIcon:ClearAllPoints()
     if theme.GuideNameClassIcon then
         GuideName.classIcon:SetTexture(theme.GuideNameClassIcon)
+        GuideName.classIcon:SetAlpha(theme.GuideNameClassIconAlpha)
         GuideName.classIcon:SetPoint(unpack(theme.GuideNameClassIconAnchor))
         GuideName.classIcon:SetSize(unpack(theme.GuideNameClassIconSize))
     end
@@ -243,6 +260,7 @@ function addon.RenderFrame()
     Footer.cog:ClearAllPoints()
     if theme.FooterCog then
         Footer.cog:SetNormalTexture(theme.FooterCog)
+        Footer.cog:SetAlpha(theme.FooterCogAlpha)
         Footer.cog:SetPoint(unpack(theme.FooterCogAnchor))
         Footer.cog:SetSize(unpack(theme.FooterCogSize))
         Footer.cog:SetHighlightTexture(unpack(theme.FooterCogHighlight))
@@ -975,7 +993,7 @@ function CurrentStepFrame.UpdateText()
             else
                 stepframe:EnableMouse(true)
             end
-            stepframe:SetAlpha(1)
+            stepframe:SetAlpha(RXPFrame.skin.StepFrameAlpha)
             frameHeight = math.ceil(frameHeight + 18)
         end
         stepframe:SetHeight(frameHeight)
@@ -1066,7 +1084,7 @@ GuideName.classIcon:SetTexture(
 GuideName.classIcon:SetPoint("CENTER", GuideName.icon, "BOTTOMRIGHT", -4, 10)
 GuideName.classIcon:SetSize(24, 24)
 
-Footer.cog = CreateFrame("Button", "$parentCogwheel", RXPFrame)
+Footer.cog = CreateFrame("Button", "$parentCogwheel", Footer)
 Footer.cog:SetFrameLevel(GuideName:GetFrameLevel() + 1)
 Footer.cog:SetSize(18,18)
 Footer.cog:SetPoint("LEFT", Footer, "LEFT", 1, 1)
@@ -1112,19 +1130,20 @@ ScrollFrame:SetPoint("BOTTOMRIGHT", BottomFrame, -20, 7)
 ScrollFrame.ScrollBar:SetPoint("TOPLEFT", ScrollFrame, "TOPRIGHT", 0, -18)
 
 function addon.UpdateScrollBar()
-    local prefix = addon.GetTexture("Scrollbar/")
-
+    --local prefix = addon.GetTexture("Scrollbar/")
+    local theme = RXPFrame.skin
     local s = ScrollFrame.ScrollBar.ScrollDownButton
-    s.Normal:SetTexture(prefix .. "Down-Normal")
-    s.Highlight:SetTexture(prefix .. "Down-Highlight") -- ?
-    s.Pushed:SetTexture(prefix .. "Down-Pushed")
-    s.Disabled:SetTexture(prefix .. "Down-Disabled")
+    s.Normal:SetTexture(theme.ScrollDownNormal)
+    s.Highlight:SetTexture(theme.ScrollDownHighlight) -- ?
+    s.Pushed:SetTexture(theme.ScrollDownPushed)
+    s.Disabled:SetTexture(theme.ScrollDownDisabled)
+
     s = ScrollFrame.ScrollBar.ScrollUpButton
-    s.Normal:SetTexture(prefix .. "Up-Normal")
-    s.Highlight:SetTexture(prefix .. "Up-Highlight")
-    s.Pushed:SetTexture(prefix .. "Up-Pushed")
-    s.Disabled:SetTexture(prefix .. "Up-Disabled")
-    ScrollFrame.ScrollBar:SetThumbTexture(prefix .. "Knob")
+    s.Normal:SetTexture(theme.ScrollUpNormal)
+    s.Highlight:SetTexture(theme.ScrollUpHighlight)
+    s.Pushed:SetTexture(theme.ScrollUpPushed)
+    s.Disabled:SetTexture(theme.ScrollUpDisabled)
+    ScrollFrame.ScrollBar:SetThumbTexture(theme.ScrollKnob)
 end
 
 addon.UpdateScrollBar()
@@ -1270,7 +1289,7 @@ function addon:LoadGuide(guide, OnLoad)
         local frame = ScrollChild.framePool[n]
         frame:Show()
         frame.step = step
-        frame:SetAlpha(0.66)
+        frame:SetAlpha(0.666)
         frame:ClearAllPoints()
         local anchor
         if n == 1 then

@@ -14,6 +14,21 @@ RXPGuides.ImportSkin("RXP Blue",
     fontSize = 0,
     font = _G.GameFontNormal:GetFont(),
 
+    --Frame Alpha:
+    BottomFrameAlpha = 1,
+    StepFrameAlpha = 1,
+    GuideNameAlpha = 1,
+    FooterAlpha = 1,
+
+
+    --Texture Alpha:
+    GuideNameBgAlpha = 1,
+    FooterBgAlpha = 1,
+    GuideNameIconAlpha = 1,
+    GuideNameClassIconAlpha = 1,
+    FooterCogAlpha = 1,
+
+
     FooterBg = texturePath .. "rxp-banner",
     GuideNameBg = texturePath .. "rxp-banner",
 
@@ -52,5 +67,17 @@ RXPGuides.ImportSkin("RXP Blue",
         tileSize = 8,
         insets = {left = 4, right = 2, top = 2, bottom = 4}
     },
+
+    --ScrollBar textures:
+    ScrollDownNormal = texturePath .. "Scrollbar/Down-Normal",
+    ScrollDownHighlight = texturePath .. "Scrollbar/Down-Highlight",
+    ScrollDownPushed = texturePath .. "Scrollbar/Down-Pushed",
+    ScrollDownDisabled = texturePath .. "Scrollbar/Down-Disabled",
+    ScrollUpNormal = texturePath .. "Scrollbar/Up-Normal",
+    ScrollUpHighlight = texturePath .. "Scrollbar/Up-Highlight",
+    ScrollUpPushed = texturePath .. "Scrollbar/Up-Pushed",
+    ScrollUpDisabled =  texturePath .. "Scrollbar/Up-Disabled",
+    ScrollKnob = texturePath .. "Scrollbar/Knob",
+
 })
 
