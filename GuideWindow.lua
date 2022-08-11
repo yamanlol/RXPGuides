@@ -215,21 +215,27 @@ function addon.RenderFrame()
 
     GuideName.bg:SetTexture(theme.GuideNameBg)
 
-    GuideName.icon:SetTexture(theme.GuideNameIcon)
     GuideName.icon:ClearAllPoints()
-    GuideName.icon:SetPoint(unpack(theme.GuideNameIconAnchor))
-    GuideName.icon:SetSize(unpack(theme.GuideNameIconSize))
+    if theme.GuideNameIcon then
+        GuideName.icon:SetTexture(theme.GuideNameIcon)
+        GuideName.icon:SetPoint(unpack(theme.GuideNameIconAnchor))
+        GuideName.icon:SetSize(unpack(theme.GuideNameIconSize))
+    end
 
-    GuideName.classIcon:SetTexture(theme.GuideNameClassIcon)
     GuideName.classIcon:ClearAllPoints()
-    GuideName.classIcon:SetPoint(unpack(theme.GuideNameClassIconAnchor))
-    GuideName.classIcon:SetSize(unpack(theme.GuideNameClassIconSize))
+    if theme.GuideNameClassIcon then
+        GuideName.classIcon:SetTexture(theme.GuideNameClassIcon)
+        GuideName.classIcon:SetPoint(unpack(theme.GuideNameClassIconAnchor))
+        GuideName.classIcon:SetSize(unpack(theme.GuideNameClassIconSize))
+    end
 
-    Footer.cog:SetNormalTexture(theme.FooterCog)
     Footer.cog:ClearAllPoints()
-    Footer.cog:SetPoint(unpack(theme.FooterCogAnchor))
-    Footer.cog:SetSize(unpack(theme.FooterCogSize))
-    Footer.cog:SetHighlightTexture(unpack(theme.FooterCogHighlight))
+    if theme.FooterCog then
+        Footer.cog:SetNormalTexture(theme.FooterCog)
+        Footer.cog:SetPoint(unpack(theme.FooterCogAnchor))
+        Footer.cog:SetSize(unpack(theme.FooterCogSize))
+        Footer.cog:SetHighlightTexture(unpack(theme.FooterCogHighlight))
+    end
 
     addon.arrowFrame.texture:SetTexture(theme.arrowFrameTexture)
 
