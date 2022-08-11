@@ -211,9 +211,20 @@ function addon.RenderFrame()
     Footer:ClearBackdrop()
     Footer:SetBackdrop(RXPFrame.backdropEdge)
     Footer:SetBackdropColor(unpack(addon.colors.background))
-    Footer.bg:SetTexture(theme.FooterBg)
 
-    GuideName.bg:SetTexture(theme.GuideNameBg)
+    if theme.GuideNameBg then
+        GuideName.bg:SetTexture(theme.GuideNameBg)
+        GuideName.bg:SetAlpha(1)
+    else
+        GuideName.bg:SetAlpha(0)
+    end
+
+    if theme.FooterBg then
+        Footer.bg:SetTexture(theme.FooterBg)
+        Footer.bg:SetAlpha(1)
+    else
+        Footer.bg:SetAlpha(0)
+    end
 
     GuideName.icon:ClearAllPoints()
     if theme.GuideNameIcon then
