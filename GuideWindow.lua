@@ -44,7 +44,7 @@ addon.skins = skins
 
 function addon.CreateRXPTheme(colors,texturePath)
     local theme = {}
-    theme.texturePath = texturePath
+    theme.texturePath = texturePath --deprecated, used only for generating the different UI themes
     theme.colors = colors
     theme.fontSize = 0
     theme.font = _G.GameFontNormal:GetFont()
@@ -112,8 +112,9 @@ end
 
 --Same as RXPGuides.ImportSkin, available from the public namespace
 function addon.RXPG.ImportSkin(name,tbl)
-    if not name:find("^RXP ") then
+    if not name:find("^RXP ")  and type(tbl) == "table" then
         addon.skins[name] = tbl
+        return true
     end
 end
 

@@ -15,7 +15,6 @@
 libs\embeds.xml
 
 RXPGuides.lua
-skins.lua
 GuideWindow.lua
 SettingsPanel.lua
 HSBatching.lua
