@@ -1196,7 +1196,10 @@ RXPFrame.bottomMenu = {
         notCheckable = 1,
         func = addon.LoadGuide,
         arg1 = addon.currentGuide
-    }, {text = "Options...", notCheckable = 1, func = _G.SlashCmdList.RXPG},
+    }, {text = "Options...", notCheckable = 1, func = function ()
+        _G.InterfaceOptionsFrame_OpenToCategory(addon.RXPOptions)
+        _G.InterfaceOptionsFrame_OpenToCategory(addon.RXPOptions)
+    end},
     {text = "Close", notCheckable = 1, func = function(self) self:Hide() end}
 }
 
@@ -1733,7 +1736,10 @@ function RXPFrame.GenerateMenuTable()
     table.insert(menuList, {
         text = "Options...",
         notCheckable = 1,
-        func = _G.SlashCmdList.RXPG
+        func = function ()
+            _G.InterfaceOptionsFrame_OpenToCategory(addon.RXPOptions)
+            _G.InterfaceOptionsFrame_OpenToCategory(addon.RXPOptions)
+        end
     })
 
     table.insert(menuList, {
