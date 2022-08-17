@@ -100,7 +100,6 @@ function RXPG_init()
     end
     RXPCData.phase = RXPCData.phase or 6
     RXPCData.SoM = RXPCData.SoM or 1
-    SoMCheck()
     addon.RenderFrame()
     RXPCData.stepSkip = RXPCData.stepSkip or {}
     RXPCData.xprate = RXPCData.xprate or 1
@@ -491,6 +490,14 @@ function addon:OnInitialize()
     addon.RXPG.LoadCachedGuides()
     addon.RXPG.LoadEmbeddedGuides()
 
+    if addon.settings.db.profile.enableTracker then addon.tracker.SetupTracker() end
+
+    addon.comms:Setup()
+
+end
+
+function addon:OnEnable()
+    SoMCheck()
     ProcessSpells()
     addon.GetProfessionLevel()
     local guide = addon.GetGuideTable(RXPCData.currentGuideGroup,
@@ -508,13 +515,9 @@ function addon:OnInitialize()
         addon.RXPFrame.BottomFrame.UpdateFrame()
         addon.noGuide = true
     end
+    addon.RXPFrame.GenerateMenuTable()
 
-    if addon.settings.db.profile.enableTracker then addon.tracker.SetupTracker() end
 
-    addon.comms:Setup()
-end
-
-function addon:OnEnable()
     self:RegisterEvent("GET_ITEM_INFO_RECEIVED")
     self:RegisterEvent("BAG_UPDATE_DELAYED")
     self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -528,7 +531,6 @@ function addon:OnEnable()
     self:RegisterEvent("PLAYER_CONTROL_LOST")
     self:RegisterEvent("PLAYER_CONTROL_GAINED")
 
-    self:RegisterEvent("PLAYER_ENTERING_WORLD")
     -- self:RegisterEvent("QUEST_LOG_UPDATE")
 
     questFrame:RegisterEvent("QUEST_COMPLETE")
@@ -546,10 +548,6 @@ function addon:OnEnable()
     if _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC then
         self:RegisterEvent("UNIT_AURA")
     end
-end
-
-function addon:PLAYER_ENTERING_WORLD()
-    addon.RXPFrame.GenerateMenuTable()
 end
 
 function addon:GET_ITEM_INFO_RECEIVED(_, itemNumber, success)
